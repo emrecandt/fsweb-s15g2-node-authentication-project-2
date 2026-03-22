@@ -1,6 +1,15 @@
 const db = require('../../data/db-config.js');
 
-function bul() {
+async function bul() {
+
+  const tables = await db("users").join("roles", "users.role_id", "roles.role_id").select("users.user_id", "users.username", "roles.role_name");
+  return tables.map((table)=>{
+    return {
+      "user_id": table.user_id,
+      "username": table.username,
+      "role_name": table.role_name
+    }
+  });
   /**
     2 tabloyu birleştirmeniz lazım (join)
     Tüm kullanıcılar DİZİSİNİ çözümlemeli
@@ -20,7 +29,16 @@ function bul() {
    */
 }
 
-function goreBul(filtre) {
+async function goreBul(filtre) {
+  const filtreTable = await db("users").join("roles", "users.role_id", "roles.role_id").where(filtre).select("users.user_id", "users.username","users.password", "roles.role_name");
+  return filtreTable.map((filtreUser)=>{
+    return {
+       "user_id": filtreUser.user_id,
+      "username": filtreUser.username,
+      "password": filtreUser.password,
+      "role_name": filtreUser.role_name
+    }
+  })
   /**
     2 tabloyu birleştirmeniz gerekiyor
     Filtreyle eşleşen kullanıcıları içeren DİZİYİ çözümlemeli
@@ -36,7 +54,10 @@ function goreBul(filtre) {
    */
 }
 
-function idyeGoreBul(user_id) {
+async function idyeGoreBul(user_id) {
+  const userId = await db("users").join("roles", "users.role_id", "roles.role_id").select("user_id", "username", "role_name").where({user_id}).first();
+  return userId;
+
   /**
     2 tabloyu birleştirmeniz gerekiyor
     Verilen id li kullanıcıyı çözümlemeli
